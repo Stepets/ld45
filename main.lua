@@ -3,12 +3,6 @@ local Bump, Player
 local assets, map, status, world, hero
 
 local statuses
-local player = {
-  status = 'default',
-  inventory = {
-    coins = 0
-  },
-}
 
 local ground_0 = {}
 local ground_1 = {}
@@ -19,16 +13,19 @@ function love.load()
 
     assets = require "assets"
     map, world = unpack(require "map")
-    print(map, world)
     status = require "status"
 
     statuses = {
-        default = status.new { 0 },
-        fire_proof = status.new { 0, 10 },
+        default = status.new { },
+        fire_proof = status.new { assets.fire },
     }
 
     hero = Player:new()
     hero:init()
+    hero.status = 'default'
+    hero.inventory = {
+      coins = 0
+    }
 
     -- world = Bump.newWorld(16) -- 16 is our tile size
 
@@ -40,7 +37,23 @@ function love.load()
 end
 
 function love.update(dt)
-    hero:move(dt, world)
+    hero:move(dt, world, function(item, other)
+      if statuses[item.status]:walkable(other[1]) then
+        return false
+      else
+        return "slide"
+      end
+    end)
+end
+
+function love.keyreleased(key, scancode)
+  if key == "f" then
+    if hero.status == 'default' then
+      hero.status = 'fire_proof'
+    else
+      hero.status = 'default'
+    end
+  end
 end
 
 function love.draw()

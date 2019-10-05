@@ -31,7 +31,7 @@ function Player:init()
     self.img = love.graphics.newImage('assets/player.png')
 end
 
-function Player:move(dt, world)
+function Player:move(dt, world, filter)
     local goalX = self.x + self.xVelocity
     local goalY = self.y + self.yVelocity
     local collisions
@@ -60,7 +60,7 @@ function Player:move(dt, world)
         self.isGrounded = false -- we are no longer in contact with the ground
     end
 
-    self.x, self.y, collisions = world:move(self, goalX, goalY)
+    self.x, self.y, collisions = world:move(self, goalX, goalY, filter)
 end
 
 function Player:draw()
