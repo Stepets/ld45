@@ -1,12 +1,13 @@
-local Bump, Player, MapTileset
+local Bump, Player, Enemy, MapTileset
 
-local assets, map, status, world, hero, items, mTileset, ui
+local assets, map, status, world, hero, items, mTileset, ui, enemy1
 
 local statuses
 
 function love.load()
     Bump = require 'bump.bump'
     Player = require "player"
+    Enemy = require "enemy"
     MapTileset = require "mapTileset"
 
     assets = require "assets"
@@ -18,9 +19,13 @@ function love.load()
     hero = Player:new()
     hero:init()
 
+    enemy1 = Enemy:new()
+    enemy1:init()
+
     ui:init(hero)
 
-    world:add(hero, hero.x, hero.y, hero.baseWidth * 0.5, hero.baseHeight * 0.5)
+    world:add(hero, hero.x, hero.y, 20, hero.baseHeight * 0.5)
+    world:add(enemy1, enemy1.x, enemy1.y, 20, enemy1.baseHeight * 0.5)
 
     mTileset = MapTileset:new()
     mTileset:loadTileSet()
@@ -46,6 +51,8 @@ function love.update(dt)
         end
     end)
 
+    enemy1:move(dt, world)
+
     for item, effect in pairs(to_delete) do
         effect()
     end
@@ -66,6 +73,7 @@ function love.draw()
     end
 
     hero:draw()
+    enemy1:draw()
     ui.draw()
 end
 

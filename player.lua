@@ -3,18 +3,20 @@ local statuses = require "status"
 local Player = {}
 function Player:new()
     local newObj = {
-        x = 16,
-        y = 16,
+        x = 60,
+        y = 50,
+        health = 10,
 
         -- The first set of values are for our rudimentary physics system
         xVelocity = 0, -- current velocity on x, y axes
         yVelocity = 0,
         acc = 100, -- the acceleration of our player
-        maxSpeed = 600, -- the top speed
+        maxSpeed = 300, -- the top speed
         friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
         gravity = 100, -- we will accelerate towards the bottom
 
         -- These are values applying specifically to jumping
+        isAttack = false, -- are we in the process of jumping?
         isJumping = false, -- are we in the process of jumping?
         isRuninig = false, -- are we in the process of jumping?
         hasReachedMax = false,
@@ -44,6 +46,7 @@ function Player:init()
     self.animation.stay = {};
     self.animation.run = {};
     self.animation.jump = {};
+    self.animation.attack = {};
 
     table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
 
@@ -55,6 +58,9 @@ function Player:init()
     table.insert(self.animation.jump,
         love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
 
+    table.insert(self.animation.attack,
+        love.graphics.newQuad(400, 125, self.baseWidth + 15, self.baseHeight, self.img:getDimensions()))
+
     self.animation.duration = 0.5
     self.animation.currentTime = 0
 end
@@ -62,7 +68,7 @@ end
 function Player:move(dt, world, filter)
     local goalX = self.x + self.xVelocity
     local goalY = self.y + self.yVelocity
-    local collisions
+    local collisions, collisionsLength
 
     -- Apply Friction
     self.xVelocity = self.xVelocity * (1 - math.min(dt * self.friction, 1))
@@ -98,7 +104,14 @@ function Player:move(dt, world, filter)
         self.isJumping = false
     end
 
-    self.x, self.y, collisions = world:move(self, goalX, goalY, filter)
+
+    self.x, self.y, collisions, collisionsLength = world:move(self, goalX, goalY, filter)
+
+    if love.keyboard.isDown("1") then
+        self.isAttack = true
+    else
+        self.isAttack = false
+    end
 
     for i, coll in ipairs(collisions) do
         if coll.touch.y > goalY then
@@ -110,6 +123,17 @@ function Player:move(dt, world, filter)
         end
     end
 
+    for i = 1, collisionsLength do
+        if self.isAttack and collisions[i].other.health then
+            collisions[i].other.health = collisions[i].other.health - 1
+            collisions[i].other.isAttacked = true
+            if collisions[i].other.health < 1 then
+                world:remove(collisions[i].other)
+            end
+        end
+    end
+
+
     self.animation.currentTime = self.animation.currentTime + dt
     if self.animation.currentTime >= self.animation.duration then
         self.animation.currentTime = self.animation.currentTime - self.animation.duration
@@ -120,7 +144,9 @@ end
 
 function Player:draw()
     local animation
-    if self.isJumping or self.hasReachedMax then
+    if self.isAttack then
+        animation = self.animation.attack
+    elseif self.isJumping or self.hasReachedMax then
         animation = self.animation.jump
     elseif self.isRuninig then
         animation = self.animation.run

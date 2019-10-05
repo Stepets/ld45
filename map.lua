@@ -9,12 +9,12 @@ local c = {asset = assets.coin, name = 'coin'}
 local p = {"player"}
 local e = {"enemy"}
 local structure = {
-  w = 9,
-  {_, p, _, _, _, e, _, _, w},
-  {w, w, _, _, w, w, _, _, w},
-  {w, _, _, _, f, _, _, w, w},
-  {w, c, c, c, f, _, w, w, w},
-  {w, w, w, w, w, w, w, w, w},
+  w = 47,
+  {_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,_,_,_,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,},
+  {_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,_,_,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,},
+  {_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,_,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,},
+  {_, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,},
+  {w, w, w, w, w, w, w, w, w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,},
 }
 
 local function load()
