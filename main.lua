@@ -1,6 +1,6 @@
 local Bump, Player
 
-local assets, map, status, world, hero, items
+local assets, map, status, world, hero, items, ui
 
 local statuses
 
@@ -15,6 +15,7 @@ function love.load()
     map, world = unpack(require "map")
     status = require "status"
     items = require "items"
+    ui = require "ui"
 
     statuses = {
         default = status.new {},
@@ -28,7 +29,7 @@ function love.load()
         coins = 0
     }
 
-    -- world = Bump.newWorld(16) -- 16 is our tile size
+    ui:init(hero)
 
     world:add(hero, hero.x, hero.y, hero.baseWidth * 0.5, hero.baseHeight * 0.5)
 
@@ -42,7 +43,7 @@ function love.update(dt)
 
     hero:move(dt, world, function(item, other)
       if statuses[item.status]:walkable(other.asset) then
-            return false
+        return false
       elseif other.asset == assets.coin then
         if item == hero and not to_delete[other] then
           to_delete[other] = function()
@@ -52,22 +53,15 @@ function love.update(dt)
           end
         end
         return "cross"
-        else
-            return "slide"
-        end
+      else
+        return "slide"
+      end
     end)
 
     for item, effect in pairs(to_delete) do
       effect()
     end
-end
-
-function love.keyreleased(key, scancode)
-    if key == "f" then
-    items.alco:use(hero)
-  elseif key == "s" then
-    print("stats", hero.inventory.coins, hero.status)
-    end
+    ui.update(dt)
 end
 
 function love.draw()
@@ -87,4 +81,35 @@ function love.draw()
     love.graphics.rectangle('fill', world:getRect(ground_1))
 
     hero:draw()
+    ui.draw()
+end
+
+
+function love.mousepressed(x, y, button)
+	ui.mousepressed(x, y, button)
+end
+
+function love.mousereleased(x, y, button)
+	ui.mousereleased(x, y, button)
+end
+
+function love.wheelmoved(x, y)
+	ui.wheelmoved(x, y)
+end
+
+function love.keypressed(key, isrepeat)
+	ui.keypressed(key, isrepeat)
+end
+
+function love.keyreleased(key)
+  if key == "f" then
+    items.alco:use(hero)
+  elseif key == "s" then
+    print("stats", hero.inventory.coins, hero.status)
+  end
+	ui.keyreleased(key)
+end
+
+function love.textinput(text)
+	ui.textinput(text)
 end
