@@ -1,3 +1,5 @@
+local assets = require 'assets'
+
 local status = {}
 
 function status.new(walkable)
@@ -12,4 +14,7 @@ function status:walkable(tile_code)
   return self.walks[tile_code]
 end
 
-return status
+return {
+    ["Fire proof"] = status.new { assets.fire },
+    ["Icarus"] = status.new {},
+}

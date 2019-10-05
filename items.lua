@@ -19,9 +19,15 @@ local items = {
         return false
       end
 
-      player.status = 'fire_proof'
+      table.insert(player.status, {name = 'Fire proof', duration = 10})
     end
-  }
+  },
+  donations = {
+    cost = {},
+    use = function(self, player)
+      player.inventory.coins = (player.inventory.coins or 0) + 1
+    end
+  },
 }
 
 return items

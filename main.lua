@@ -1,6 +1,6 @@
 local Bump, Player, MapTileset
 
-local assets, map, status, world, hero, items, mTileset
+local assets, map, status, world, hero, items, mTileset, ui
 
 local statuses
 
@@ -13,18 +13,12 @@ function love.load()
     map, world = unpack(require "map")
     status = require "status"
     items = require "items"
-
-    statuses = {
-        default = status.new {},
-        fire_proof = status.new { assets.fire },
-    }
+    ui = require "ui"
 
     hero = Player:new()
     hero:init()
-    hero.status = 'default'
-    hero.inventory = {
-        coins = 0
-    }
+
+    ui:init(hero)
 
     world:add(hero, hero.x, hero.y, hero.baseWidth * 0.5, hero.baseHeight * 0.5)
 
@@ -36,7 +30,7 @@ function love.update(dt)
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
-        if statuses[item.status]:walkable(other.asset) then
+      if item:can_pass(other.asset) then
             return false
         elseif other.asset == assets.coin then
             if item == hero and not to_delete[other] then
@@ -55,14 +49,7 @@ function love.update(dt)
     for item, effect in pairs(to_delete) do
         effect()
     end
-end
-
-function love.keyreleased(key, scancode)
-    if key == "f" then
-        items.alco:use(hero)
-    elseif key == "s" then
-        print("stats", hero.inventory.coins, hero.status)
-    end
+    ui.update(dt)
 end
 
 function love.draw()
@@ -79,4 +66,35 @@ function love.draw()
     end
 
     hero:draw()
+    ui.draw()
+end
+
+
+function love.mousepressed(x, y, button)
+	ui.mousepressed(x, y, button)
+end
+
+function love.mousereleased(x, y, button)
+	ui.mousereleased(x, y, button)
+end
+
+function love.wheelmoved(x, y)
+	ui.wheelmoved(x, y)
+end
+
+function love.keypressed(key, isrepeat)
+	ui.keypressed(key, isrepeat)
+end
+
+function love.keyreleased(key)
+  if key == "f" then
+    items.alco:use(hero)
+  elseif key == "s" then
+    print("stats", hero.inventory.coins, hero.status)
+  end
+	ui.keyreleased(key)
+end
+
+function love.textinput(text)
+	ui.textinput(text)
 end
