@@ -1,4 +1,4 @@
-local Bump, Player, MapTileset
+local Bump, Player, MapTileset, camera
 
 local assets, map, status, world, hero, items, mTileset, ui
 
@@ -8,6 +8,7 @@ function love.load()
     Bump = require 'bump.bump'
     Player = require "player"
     MapTileset = require "mapTileset"
+    camera = (require 'hump.camera').new()
 
     assets = require "assets"
     map, world = unpack(require "map")
@@ -50,9 +51,11 @@ function love.update(dt)
         effect()
     end
     ui.update(dt)
+    camera:lookAt(hero.x, hero.y)
 end
 
 function love.draw()
+    camera:attach()
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
 
     local height = #map
@@ -66,6 +69,7 @@ function love.draw()
     end
 
     hero:draw()
+    camera:detach()
     ui.draw()
 end
 
