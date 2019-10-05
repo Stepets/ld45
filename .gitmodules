@@ -4,3 +4,6 @@
 [submodule "LoveFrames"]
 	path = LoveFrames
 	url = git@github.com:linux-man/LoveFrames.git
+[submodule "hump"]
+	path = hump
+	url = git@github.com:vrld/hump.git

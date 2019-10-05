@@ -1,4 +1,4 @@
-local Bump, Player, Enemy, MapTileset
+local Bump, Player, Enemy, MapTileset, camera
 
 local assets, map, status, world, hero, items, mTileset, ui, enemy1
 
@@ -9,6 +9,7 @@ function love.load()
     Player = require "player"
     Enemy = require "enemy"
     MapTileset = require "mapTileset"
+    camera = (require 'hump.camera').new()
 
     assets = require "assets"
     map, world = unpack(require "map")
@@ -57,9 +58,11 @@ function love.update(dt)
         effect()
     end
     ui.update(dt)
+    camera:lookAt(hero.x, hero.y)
 end
 
 function love.draw()
+    camera:attach()
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
 
     local height = #map
@@ -74,6 +77,7 @@ function love.draw()
 
     hero:draw()
     enemy1:draw()
+    camera:detach()
     ui.draw()
 end
 
@@ -95,11 +99,6 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-  if key == "f" then
-    items.alco:use(hero)
-  elseif key == "s" then
-    print("stats", hero.inventory.coins, hero.status)
-  end
 	ui.keyreleased(key)
 end
 
