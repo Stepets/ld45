@@ -87,11 +87,6 @@ function love.keypressed(key, isrepeat)
 end
 
 function love.keyreleased(key)
-  if key == "f" then
-    items.alco:use(hero)
-  elseif key == "s" then
-    print("stats", hero.inventory.coins, hero.status)
-  end
 	ui.keyreleased(key)
 end
 
