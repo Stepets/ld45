@@ -1,11 +1,11 @@
 local function check_cost(item, player)
-  for it, val in item.cost do
+  for it, val in pairs(item.cost) do
     if not player.inventory or player.inventory[it] < val then
       return false
     end
   end
 
-  for it, val in item.cost do
+  for it, val in pairs(item.cost) do
     player.inventory[it] = player.inventory[it] - val
   end
   return true
@@ -23,3 +23,5 @@ local items = {
     end
   }
 }
+
+return items

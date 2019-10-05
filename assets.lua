@@ -16,10 +16,18 @@ for x = 1, w do
   end
 end
 
+local coin = love.image.newImageData(w, h)
+
+for x = w*0.25, w*0.75 do
+  for y = h*0.25, h*0.75 do
+    coin:setPixel(math.floor(x), math.floor(y), 0.8, 0.9, 0.1, 1)
+  end
+end
 
 return {
   w = w,
   h = h,
   wall = love.graphics.newImage(wall),
   fire = love.graphics.newImage(fire),
+  coin = love.graphics.newImage(coin),
 }

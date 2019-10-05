@@ -1,6 +1,6 @@
 local Bump, Player
 
-local assets, map, status, world, hero
+local assets, map, status, world, hero, items
 
 local statuses
 
@@ -14,6 +14,7 @@ function love.load()
     assets = require "assets"
     map, world = unpack(require "map")
     status = require "status"
+    items = require "items"
 
     statuses = {
         default = status.new {},
@@ -37,22 +38,35 @@ function love.load()
 end
 
 function love.update(dt)
+    local to_delete = {}
+
     hero:move(dt, world, function(item, other)
-        if statuses[item.status]:walkable(other[1]) then
+      if statuses[item.status]:walkable(other.asset) then
             return false
+      elseif other.asset == assets.coin then
+        if item == hero and not to_delete[other] then
+          to_delete[other] = function()
+            hero.inventory.coins = hero.inventory.coins + 1
+            world:remove(other)
+            map[other.y][other.x] = nil
+          end
+        end
+        return "cross"
         else
             return "slide"
         end
     end)
+
+    for item, effect in pairs(to_delete) do
+      effect()
+    end
 end
 
 function love.keyreleased(key, scancode)
     if key == "f" then
-        if hero.status == 'default' then
-            hero.status = 'fire_proof'
-        else
-            hero.status = 'default'
-        end
+    items.alco:use(hero)
+  elseif key == "s" then
+    print("stats", hero.inventory.coins, hero.status)
     end
 end
 
@@ -61,11 +75,10 @@ function love.draw()
 
     local height = #map
     for y, row in ipairs(map) do
-        for x, c in ipairs(row) do
-            if c == 1 then
-                love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
-            elseif c == 10 then
-                love.graphics.draw(assets.fire, x * assets.w, y * assets.h)
+      for x = 1, map.w do
+        local c = row[x]
+        if c and c.asset then
+          love.graphics.draw(c.asset, x * assets.w, y * assets.h)
             end
         end
     end
