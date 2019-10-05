@@ -30,7 +30,7 @@ function Player:init()
     self.img = love.graphics.newImage('assets/player.png')
 end
 
-function Player:move(dt, world)
+function Player:move(dt, world, filter)
     local goalX = self.x + self.xVelocity
     local goalY = self.y + self.yVelocity
     local collisions
@@ -59,7 +59,7 @@ function Player:move(dt, world)
         self.isJumping = false
     end
 
-    self.x, self.y, collisions = world:move(self, goalX, goalY)
+    self.x, self.y, collisions = world:move(self, goalX, goalY, filter)
 
     for i, coll in ipairs(collisions) do
         if coll.touch.y > goalY then

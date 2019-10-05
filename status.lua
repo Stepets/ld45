@@ -1,15 +1,15 @@
 local status = {}
 
 function status.new(walkable)
-  local obj = {walkable = {}}
+  local obj = {walks = {}}
   for _, v in ipairs(walkable) do
-    obj.walkable[v] = true
+    obj.walks[v] = true
   end
   return setmetatable(obj, {__index = status})
 end
 
 function status:walkable(tile_code)
-  return self.walkable[tile_code]
+  return self.walks[tile_code]
 end
 
 return status

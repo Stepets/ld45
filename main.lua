@@ -12,18 +12,22 @@ function love.load()
     Player = require "player"
 
     assets = require "assets"
-    map = require "map"
+    map, world = unpack(require "map")
     status = require "status"
 
     statuses = {
-        default = status.new { 0 },
-        fire_proof = status.new { 0, 10 },
+        default = status.new { },
+        fire_proof = status.new { assets.fire },
     }
 
     hero = Player:new()
     hero:init()
+    hero.status = 'default'
+    hero.inventory = {
+      coins = 0
+    }
 
-    world = Bump.newWorld(16) -- 16 is our tile size
+    -- world = Bump.newWorld(16) -- 16 is our tile size
 
     world:add(hero, hero.x, hero.y, hero.img:getWidth(), hero.img:getHeight())
 
@@ -33,19 +37,36 @@ function love.load()
 end
 
 function love.update(dt)
-    hero:move(dt, world)
+    hero:move(dt, world, function(item, other)
+      if statuses[item.status]:walkable(other[1]) then
+        return false
+      else
+        return "slide"
+      end
+    end)
 end
 
--- Draw a coloured rectangle.
+function love.keyreleased(key, scancode)
+  if key == "f" then
+    if hero.status == 'default' then
+      hero.status = 'fire_proof'
+    else
+      hero.status = 'default'
+    end
+  end
+end
+
 function love.draw()
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
     local height = #map
     for y, row in ipairs(map) do
-        for x, c in ipairs(row) do
-            if c == 1 then
-                love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
-            end
+      for x, c in ipairs(row) do
+        if c == 1 then
+          love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
+        elseif c == 10 then
+          love.graphics.draw(assets.fire, x * assets.w, y * assets.h)
         end
+      end
     end
 
     love.graphics.rectangle('fill', world:getRect(ground_0))
