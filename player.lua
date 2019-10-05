@@ -3,21 +3,20 @@ function Player:new()
     local newObj = {
         x = 16,
         y = 16,
+
         -- The first set of values are for our rudimentary physics system
         xVelocity = 0, -- current velocity on x, y axes
         yVelocity = 0,
         acc = 100, -- the acceleration of our player
         maxSpeed = 600, -- the top speed
         friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
-        gravity = 80, -- we will accelerate towards the bottom
+        gravity = 100, -- we will accelerate towards the bottom
 
         -- These are values applying specifically to jumping
         isJumping = false, -- are we in the process of jumping?
-        isGrounded = false, -- are we on the ground?
-        hasReachedMax = false, -- is this as high as we can go?
-        jumpAcc = 500, -- how fast do we accelerate towards the top
+        hasReachedMax = false,
+        jumpAcc = 50, -- how fast do we accelerate towards the top
         jumpMaxSpeed = 9.5, -- our speed limit while jumping
-
         -- Here are some incidental storage areas
         img = nil -- store the sprite we'll be drawing
     }
@@ -49,18 +48,28 @@ function Player:move(dt, world)
         self.xVelocity = self.xVelocity + self.acc * dt
     end
 
-    -- The Jump code gets a lttle bit crazy.  Bare with me.
-    if love.keyboard.isDown("up", "w") then
-        if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-            self.yVelocity = self.yVelocity - self.jumpAcc * dt
+    if love.keyboard.isDown("up", "w", "space") then
+        if self.yVelocity > 0 and not self.isJumping and not self.hasReachedMax then
+            self.yVelocity = -self.jumpAcc
+            self.isJumping = true
         elseif math.abs(self.yVelocity) > self.jumpMaxSpeed then
-            --            self.hasReachedMax = true
+            self.hasReachedMax = true
         end
-
-        self.isGrounded = false -- we are no longer in contact with the ground
+    else
+        self.isJumping = false
     end
 
     self.x, self.y, collisions = world:move(self, goalX, goalY)
+
+    for i, coll in ipairs(collisions) do
+        if coll.touch.y > goalY then
+            self.hasReachedMax = true
+            self.isJumping = true
+        elseif coll.normal.y < 0 then
+            self.hasReachedMax = false
+            self.isJumping = false
+        end
+    end
 end
 
 function Player:draw()
