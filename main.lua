@@ -2,8 +2,6 @@ local Bump, Player
 
 local assets, map, status, world, hero, items, ui
 
-local statuses
-
 local ground_0 = {}
 local ground_1 = {}
 
@@ -17,17 +15,8 @@ function love.load()
     items = require "items"
     ui = require "ui"
 
-    statuses = {
-        default = status.new {},
-        fire_proof = status.new { assets.fire },
-    }
-
     hero = Player:new()
     hero:init()
-    hero.status = 'default'
-    hero.inventory = {
-        coins = 0
-    }
 
     ui:init(hero)
 
@@ -42,7 +31,7 @@ function love.update(dt)
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
-      if statuses[item.status]:walkable(other.asset) then
+      if item:can_pass(other.asset) then
         return false
       elseif other.asset == assets.coin then
         if item == hero and not to_delete[other] then

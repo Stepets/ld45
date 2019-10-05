@@ -49,6 +49,18 @@ function ui:init(hero)
     offset_y = offset_y + 30
   end
 
+  local panel = loveframes.Create("panel")
+  panel:SetSize(125, 125)
+  panel:SetPos(0, 400)
+  self.status = loveframes.Create("text", panel)
+  self.status.Update = function(obj)
+    local text = ''
+    for _, s in ipairs(self.hero.status) do
+      text = text .. s.name .. ': ' .. tostring(math.floor(s.duration * 10) / 10) .. 's\n'
+    end
+    obj:SetText(text)
+  end
+
 end
 
 function ui.update(dt)

@@ -1,3 +1,5 @@
+local statuses = require "status"
+
 local Player = {}
 function Player:new()
     local newObj = {
@@ -24,6 +26,8 @@ function Player:new()
         baseHeight = 94,
         baseWidth = 62,
         flip = 1,
+        status = {},
+        inventory = {},
     }
 
     self.__index = self
@@ -108,6 +112,8 @@ function Player:move(dt, world, filter)
     if self.animation.currentTime >= self.animation.duration then
         self.animation.currentTime = self.animation.currentTime - self.animation.duration
     end
+
+    self:update_status(dt)
 end
 
 function Player:draw()
@@ -134,6 +140,27 @@ function Player:draw()
             0,
             -0.5, 0.5, self.baseWidth, 0)
     end
+end
+
+function Player:update_status(dt)
+  for i = #self.status, 1, -1 do
+    local s = self.status[i]
+    if s.duration then
+      s.duration = s.duration - dt
+      if s.duration <= 0 then
+        table.remove(self.status, i)
+      end
+    end
+  end
+end
+
+function Player:can_pass(tile_code)
+  for _, s in ipairs(self.status) do
+    if statuses[s.name]:walkable(tile_code) then
+      return true
+    end
+  end
+  return false
 end
 
 return Player
