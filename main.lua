@@ -16,7 +16,7 @@ function love.load()
     status = require "status"
 
     statuses = {
-        default = status.new { },
+        default = status.new {},
         fire_proof = status.new { assets.fire },
     }
 
@@ -24,12 +24,12 @@ function love.load()
     hero:init()
     hero.status = 'default'
     hero.inventory = {
-      coins = 0
+        coins = 0
     }
 
     -- world = Bump.newWorld(16) -- 16 is our tile size
 
-    world:add(hero, hero.x, hero.y, hero.img:getWidth(), hero.img:getHeight())
+    world:add(hero, hero.x, hero.y, hero.baseWidth * 0.5, hero.baseHeight * 0.5)
 
     -- Draw a level
     world:add(ground_0, 120, 360, 640, 16)
@@ -38,22 +38,22 @@ end
 
 function love.update(dt)
     hero:move(dt, world, function(item, other)
-      if statuses[item.status]:walkable(other[1]) then
-        return false
-      else
-        return "slide"
-      end
+        if statuses[item.status]:walkable(other[1]) then
+            return false
+        else
+            return "slide"
+        end
     end)
 end
 
 function love.keyreleased(key, scancode)
-  if key == "f" then
-    if hero.status == 'default' then
-      hero.status = 'fire_proof'
-    else
-      hero.status = 'default'
+    if key == "f" then
+        if hero.status == 'default' then
+            hero.status = 'fire_proof'
+        else
+            hero.status = 'default'
+        end
     end
-  end
 end
 
 function love.draw()
@@ -61,13 +61,13 @@ function love.draw()
 
     local height = #map
     for y, row in ipairs(map) do
-      for x, c in ipairs(row) do
-        if c == 1 then
-          love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
-        elseif c == 10 then
-          love.graphics.draw(assets.fire, x * assets.w, y * assets.h)
+        for x, c in ipairs(row) do
+            if c == 1 then
+                love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
+            elseif c == 10 then
+                love.graphics.draw(assets.fire, x * assets.w, y * assets.h)
+            end
         end
-      end
     end
 
     love.graphics.rectangle('fill', world:getRect(ground_0))

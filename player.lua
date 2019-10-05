@@ -14,12 +14,16 @@ function Player:new()
 
         -- These are values applying specifically to jumping
         isJumping = false, -- are we in the process of jumping?
+        isRuninig = false, -- are we in the process of jumping?
         hasReachedMax = false,
-        jumpAcc = 50, -- how fast do we accelerate towards the top
-        jumpMaxSpeed = 9.5, -- our speed limit while jumping
+        jumpAcc = 25, -- how fast do we accelerate towards the top
+        jumpMaxSpeed = 10, -- our speed limit while jumping
         -- Here are some incidental storage areas
         img = nil,
-        animation = {}
+        animation = {},
+        baseHeight = 94,
+        baseWidth = 62,
+        flip = 1,
     }
 
     self.__index = self
@@ -31,19 +35,22 @@ function Player:init()
     self.img = love.graphics.newImage('assets/adventurer.png')
 
     self.animation.spriteSheet = self.img;
-    self.animation.quads = {};
+    self.animation.stay = {};
+    self.animation.run = {};
+    self.animation.jump = {};
 
-    local duration = 1
-    local height = 120
-    local width = 70
+    table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
 
-    table.insert(self.animation.quads, love.graphics.newQuad(0, 0, width, height, self.img:getDimensions()))
+    table.insert(self.animation.run,
+        love.graphics.newQuad(5, 125, self.baseWidth + 20, self.baseHeight, self.img:getDimensions()))
+    table.insert(self.animation.run,
+        love.graphics.newQuad(90, 125, self.baseWidth + 5, self.baseHeight, self.img:getDimensions()))
 
-    self.animation.duration = duration or 1
+    table.insert(self.animation.jump,
+        love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+
+    self.animation.duration = 0.5
     self.animation.currentTime = 0
-end
-
-function Player:runAnimation(type)
 end
 
 function Player:move(dt, world, filter)
@@ -60,16 +67,26 @@ function Player:move(dt, world, filter)
 
     if love.keyboard.isDown("left", "a") and self.xVelocity > -self.maxSpeed then
         self.xVelocity = self.xVelocity - self.acc * dt
+
+        self.flip = false
+        self.runinig = true
     elseif love.keyboard.isDown("right", "d") and self.xVelocity < self.maxSpeed then
         self.xVelocity = self.xVelocity + self.acc * dt
+
+        self.flip = true
+        self.isRuninig = true
+    else
+        self.isRuninig = false
     end
 
     if love.keyboard.isDown("up", "w", "space") then
-        if self.yVelocity > 0 and not self.isJumping and not self.hasReachedMax then
-            self.yVelocity = -self.jumpAcc
-            self.isJumping = true
-        elseif math.abs(self.yVelocity) > self.jumpMaxSpeed then
+        if math.abs(self.yVelocity) > self.jumpMaxSpeed then
             self.hasReachedMax = true
+        end
+
+        if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax  then
+            self.yVelocity = self.yVelocity - 250 * dt
+            self.isJumping = true
         end
     else
         self.isJumping = false
@@ -94,18 +111,29 @@ function Player:move(dt, world, filter)
 end
 
 function Player:draw()
-    local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * #self.animation.quads) + 1
-    local activeFrame = self.animation.quads[spriteNum]
+    local animation
+    if self.isJumping or self.hasReachedMax then
+        animation = self.animation.jump
+    elseif self.isRuninig then
+        animation = self.animation.run
+    else
+        animation = self.animation.stay
+    end
 
-    love.graphics.draw(self.animation.spriteSheet, activeFrame,
-        self.x,
-        self.y,
-        0, 0.5, 0.5)
-end
+    local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * #animation) + 1
+    local activeFrame = animation[spriteNum]
 
-function getImageScaleForNewDimensions(image, newWidth, newHeight)
-    local currentWidth, currentHeight = image:getDimensions()
-    return (newWidth / currentWidth), (newHeight / currentHeight)
+    if self.flip then
+        love.graphics.draw(self.animation.spriteSheet, activeFrame,
+            self.x, self.y,
+            0,
+            0.5, 0.5)
+    else
+        love.graphics.draw(self.animation.spriteSheet, activeFrame,
+            self.x, self.y,
+            0,
+            -0.5, 0.5, self.baseWidth, 0)
+    end
 end
 
 return Player
