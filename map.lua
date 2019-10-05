@@ -24,4 +24,4 @@ local function load()
 end
 
 load(structure)
-return structure
+return {structure, world}
