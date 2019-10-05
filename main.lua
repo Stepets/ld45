@@ -1,6 +1,6 @@
 local Bump, Player
 
-local assets, map, status, world, hero
+local assets, map, status, world, hero, items
 
 local statuses
 
@@ -14,6 +14,7 @@ function love.load()
     assets = require "assets"
     map, world = unpack(require "map")
     status = require "status"
+    items = require "items"
 
     statuses = {
         default = status.new { },
@@ -63,11 +64,9 @@ end
 
 function love.keyreleased(key, scancode)
   if key == "f" then
-    if hero.status == 'default' then
-      hero.status = 'fire_proof'
-    else
-      hero.status = 'default'
-    end
+    items.alco:use(hero)
+  elseif key == "s" then
+    print("stats", hero.inventory.coins, hero.status)
   end
 end
 

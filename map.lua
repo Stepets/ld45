@@ -19,7 +19,8 @@ local structure = {
 
 local function load()
   for y, row in ipairs(structure) do
-    for x, c in ipairs(row) do
+    for x = 1, structure.w do
+      local c = row[x]
       if c and c.asset then
         world:add({asset = c.asset, x = x, y = y}, x * assets.w, y * assets.h, assets.w, assets.h)
       end
