@@ -69,7 +69,7 @@ function Player:move(dt, world, filter)
         self.xVelocity = self.xVelocity - self.acc * dt
 
         self.flip = false
-        self.runinig = true
+        self.isRuninig = true
     elseif love.keyboard.isDown("right", "d") and self.xVelocity < self.maxSpeed then
         self.xVelocity = self.xVelocity + self.acc * dt
 

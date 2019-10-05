@@ -3,9 +3,9 @@ local assets = require 'assets'
 local bump = require 'bump.bump'
 local world = bump.newWorld()
 
-local w = {asset = assets.wall}
-local f = {asset = assets.fire}
-local c = {asset = assets.coin}
+local w = {asset = assets.wall, name = 'wall'}
+local f = {asset = assets.fire, name = 'fire'}
+local c = {asset = assets.coin, name = 'coin'}
 local p = {"player"}
 local e = {"enemy"}
 local structure = {

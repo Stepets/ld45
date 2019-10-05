@@ -1,15 +1,13 @@
-local Bump, Player
+local Bump, Player, MapTileset
 
-local assets, map, status, world, hero, items
+local assets, map, status, world, hero, items, mTileset
 
 local statuses
-
-local ground_0 = {}
-local ground_1 = {}
 
 function love.load()
     Bump = require 'bump.bump'
     Player = require "player"
+    MapTileset = require "mapTileset"
 
     assets = require "assets"
     map, world = unpack(require "map")
@@ -28,45 +26,42 @@ function love.load()
         coins = 0
     }
 
-    -- world = Bump.newWorld(16) -- 16 is our tile size
-
     world:add(hero, hero.x, hero.y, hero.baseWidth * 0.5, hero.baseHeight * 0.5)
 
-    -- Draw a level
-    world:add(ground_0, 120, 360, 640, 16)
-    world:add(ground_1, 0, 448, 640, 32)
+    mTileset = MapTileset:new()
+    mTileset:loadTileSet()
 end
 
 function love.update(dt)
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
-      if statuses[item.status]:walkable(other.asset) then
+        if statuses[item.status]:walkable(other.asset) then
             return false
-      elseif other.asset == assets.coin then
-        if item == hero and not to_delete[other] then
-          to_delete[other] = function()
-            hero.inventory.coins = hero.inventory.coins + 1
-            world:remove(other)
-            map[other.y][other.x] = nil
-          end
-        end
-        return "cross"
+        elseif other.asset == assets.coin then
+            if item == hero and not to_delete[other] then
+                to_delete[other] = function()
+                    hero.inventory.coins = hero.inventory.coins + 1
+                    world:remove(other)
+                    map[other.y][other.x] = nil
+                end
+            end
+            return "cross"
         else
             return "slide"
         end
     end)
 
     for item, effect in pairs(to_delete) do
-      effect()
+        effect()
     end
 end
 
 function love.keyreleased(key, scancode)
     if key == "f" then
-    items.alco:use(hero)
-  elseif key == "s" then
-    print("stats", hero.inventory.coins, hero.status)
+        items.alco:use(hero)
+    elseif key == "s" then
+        print("stats", hero.inventory.coins, hero.status)
     end
 end
 
@@ -75,16 +70,13 @@ function love.draw()
 
     local height = #map
     for y, row in ipairs(map) do
-      for x = 1, map.w do
-        local c = row[x]
-        if c and c.asset then
-          love.graphics.draw(c.asset, x * assets.w, y * assets.h)
+        for x = 1, map.w do
+            local c = row[x]
+            if c and c.asset then
+                mTileset:drawTile(c.name, x, y)
             end
         end
     end
-
-    love.graphics.rectangle('fill', world:getRect(ground_0))
-    love.graphics.rectangle('fill', world:getRect(ground_1))
 
     hero:draw()
 end
