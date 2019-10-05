@@ -1,3 +1,6 @@
 [submodule "bump"]
 	path = bump
 	url = git@github.com:kikito/bump.lua.git
+[submodule "LoveFrames"]
+	path = LoveFrames
+	url = git@github.com:linux-man/LoveFrames.git
