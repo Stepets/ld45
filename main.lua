@@ -29,7 +29,7 @@ function love.load()
 
     -- world = Bump.newWorld(16) -- 16 is our tile size
 
-    world:add(hero, hero.x, hero.y, hero.img:getWidth(), hero.img:getHeight())
+    world:add(hero, hero.x, hero.y, 32, 64)
 
     -- Draw a level
     world:add(ground_0, 120, 360, 640, 16)
@@ -37,13 +37,28 @@ function love.load()
 end
 
 function love.update(dt)
+    local to_delete = {}
+
     hero:move(dt, world, function(item, other)
-      if statuses[item.status]:walkable(other[1]) then
+      if statuses[item.status]:walkable(other.asset) then
         return false
+      elseif other.asset == assets.coin then
+        if item == hero and not to_delete[other] then
+          to_delete[other] = function()
+            hero.inventory.coins = hero.inventory.coins + 1
+            world:remove(other)
+            map[other.y][other.x] = nil
+          end
+        end
+        return "cross"
       else
         return "slide"
       end
     end)
+
+    for item, effect in pairs(to_delete) do
+      effect()
+    end
 end
 
 function love.keyreleased(key, scancode)
@@ -61,11 +76,10 @@ function love.draw()
 
     local height = #map
     for y, row in ipairs(map) do
-      for x, c in ipairs(row) do
-        if c == 1 then
-          love.graphics.draw(assets.wall, x * assets.w, y * assets.h)
-        elseif c == 10 then
-          love.graphics.draw(assets.fire, x * assets.w, y * assets.h)
+      for x = 1, map.w do
+        local c = row[x]
+        if c and c.asset then
+          love.graphics.draw(c.asset, x * assets.w, y * assets.h)
         end
       end
     end
