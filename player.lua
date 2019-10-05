@@ -33,6 +33,7 @@ function Player:new()
         status = {},
         inventory = {
             coins = 0,
+            bottles = 0,
         },
         bottles = {}
     }
@@ -120,7 +121,8 @@ function Player:move(dt, world, filter)
         self.isAttack = false
     end
 
-    if love.keyboard.isDown("lshift", "rshift", "2") then
+    if love.keyboard.isDown("lshift", "rshift", "2") and self.inventory.bottles > 0 then
+        self.inventory.bottles = self.inventory.bottles - 1
         self.isBottle = true
 
         local bottle1 = Bottle:new()

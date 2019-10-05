@@ -8,7 +8,7 @@ function ui:init(hero)
 
   local panel = loveframes.Create("panel")
   panel:SetSize(210, 85)
-  panel:SetPos(500, 200, true)
+  panel:SetPos(700, 0)
 
   self.inventory = loveframes.Create("text", panel)
   self.inventory.Update = function(obj)
@@ -51,7 +51,7 @@ function ui:init(hero)
 
   local panel = loveframes.Create("panel")
   panel:SetSize(125, 125)
-  panel:SetPos(0, 400)
+  panel:SetPos(0, 0)
   self.status = loveframes.Create("text", panel)
   self.status.Update = function(obj)
     local text = ''
