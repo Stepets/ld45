@@ -1,4 +1,5 @@
 local statuses = require "status"
+local Bottle = require "bottle"
 
 local Player = {}
 function Player:new()
@@ -19,6 +20,7 @@ function Player:new()
         isAttack = false, -- are we in the process of jumping?
         isJumping = false, -- are we in the process of jumping?
         isRuninig = false, -- are we in the process of jumping?
+        isBottle = false, -- are we in the process of jumping?
         hasReachedMax = false,
         jumpAcc = 25, -- how fast do we accelerate towards the top
         jumpMaxSpeed = 10, -- our speed limit while jumping
@@ -32,6 +34,7 @@ function Player:new()
         inventory = {
             coins = 0,
         },
+        bottles = {}
     }
 
     self.__index = self
@@ -47,6 +50,7 @@ function Player:init()
     self.animation.run = {};
     self.animation.jump = {};
     self.animation.attack = {};
+    self.animation.bottle = {};
 
     table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
 
@@ -60,6 +64,9 @@ function Player:init()
 
     table.insert(self.animation.attack,
         love.graphics.newQuad(400, 125, self.baseWidth + 15, self.baseHeight, self.img:getDimensions()))
+
+    table.insert(self.animation.bottle,
+        love.graphics.newQuad(320, 125, self.baseWidth + 15, self.baseHeight, self.img:getDimensions()))
 
     self.animation.duration = 0.5
     self.animation.currentTime = 0
@@ -107,10 +114,30 @@ function Player:move(dt, world, filter)
 
     self.x, self.y, collisions, collisionsLength = world:move(self, goalX, goalY, filter)
 
-    if love.keyboard.isDown("1") then
+    if love.keyboard.isDown("lctrl", "rctrl", "1") then
         self.isAttack = true
     else
         self.isAttack = false
+    end
+
+    if love.keyboard.isDown("lshift", "rshift", "2") then
+        self.isBottle = true
+
+        local bottle1 = Bottle:new()
+        bottle1:init()
+
+        if self.flip then
+            bottle1.x = self.x + 32
+        else
+            bottle1.x = self.x - 10
+        end
+        bottle1.y = self.y + 8
+        bottle1.flip = self.flip
+
+        world:add(bottle1, bottle1.x, bottle1.y, bottle1.baseWidth * 0.1, bottle1.baseHeight * 0.1)
+        table.insert(self.bottles, bottle1)
+    else
+        self.isBottle = false
     end
 
     for i, coll in ipairs(collisions) do
@@ -140,11 +167,17 @@ function Player:move(dt, world, filter)
     end
 
     self:update_status(dt)
+
+    for _, bottle in ipairs(self.bottles) do
+        bottle:move(dt, world)
+    end
 end
 
 function Player:draw()
     local animation
-    if self.isAttack then
+    if self.isBottle then
+        animation = self.animation.bottle
+    elseif self.isAttack then
         animation = self.animation.attack
     elseif self.isJumping or self.hasReachedMax then
         animation = self.animation.jump
@@ -167,6 +200,10 @@ function Player:draw()
             self.x, self.y,
             0,
             -0.5, 0.5, self.baseWidth, 0)
+    end
+
+    for _, bottle in ipairs(self.bottles) do
+        bottle:draw()
     end
 end
 
