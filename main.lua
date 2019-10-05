@@ -58,6 +58,7 @@ end
 
 function love.draw()
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
+
     local height = #map
     for y, row in ipairs(map) do
       for x, c in ipairs(row) do

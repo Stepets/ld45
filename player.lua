@@ -18,7 +18,8 @@ function Player:new()
         jumpAcc = 50, -- how fast do we accelerate towards the top
         jumpMaxSpeed = 9.5, -- our speed limit while jumping
         -- Here are some incidental storage areas
-        img = nil -- store the sprite we'll be drawing
+        img = nil,
+        animation = {}
     }
 
     self.__index = self
@@ -27,7 +28,22 @@ function Player:new()
 end
 
 function Player:init()
-    self.img = love.graphics.newImage('assets/player.png')
+    self.img = love.graphics.newImage('assets/adventurer.png')
+
+    self.animation.spriteSheet = self.img;
+    self.animation.quads = {};
+
+    local duration = 1
+    local height = 120
+    local width = 70
+
+    table.insert(self.animation.quads, love.graphics.newQuad(0, 0, width, height, self.img:getDimensions()))
+
+    self.animation.duration = duration or 1
+    self.animation.currentTime = 0
+end
+
+function Player:runAnimation(type)
 end
 
 function Player:move(dt, world, filter)
@@ -70,10 +86,26 @@ function Player:move(dt, world, filter)
             self.isJumping = false
         end
     end
+
+    self.animation.currentTime = self.animation.currentTime + dt
+    if self.animation.currentTime >= self.animation.duration then
+        self.animation.currentTime = self.animation.currentTime - self.animation.duration
+    end
 end
 
 function Player:draw()
-    love.graphics.draw(self.img, self.x, self.y)
+    local spriteNum = math.floor(self.animation.currentTime / self.animation.duration * #self.animation.quads) + 1
+    local activeFrame = self.animation.quads[spriteNum]
+
+    love.graphics.draw(self.animation.spriteSheet, activeFrame,
+        self.x,
+        self.y,
+        0, 0.5, 0.5)
+end
+
+function getImageScaleForNewDimensions(image, newWidth, newHeight)
+    local currentWidth, currentHeight = image:getDimensions()
+    return (newWidth / currentWidth), (newHeight / currentHeight)
 end
 
 return Player
