@@ -13,8 +13,8 @@ function Player:new()
         xVelocity = 0, -- current velocity on x, y axes
         yVelocity = 0,
 
-        maxSpeed = 500, -- the top speed
-        gravity = 30, -- we will accelerate towards the bottom
+        maxSpeed = 300, -- the top speed
+        gravity = 1400, -- we will accelerate towards the bottom
 
 
         isAttack = false,
@@ -23,7 +23,7 @@ function Player:new()
         isBottle = false,
         hasReachedMax = false,
 
-        jumpMaxSpeed = 7, -- our speed limit while jumping
+        jumpMaxSpeed = 600, -- our speed limit while jumping
 
 
         img = nil,
@@ -75,8 +75,8 @@ function Player:init()
 end
 
 function Player:move(dt, world, filter)
-    local goalX = self.x + self.xVelocity
-    local goalY = self.y + self.yVelocity
+    local goalX = self.x + self.xVelocity * dt
+    local goalY = self.y + self.yVelocity * dt
     local collisions, collisionsLength
 
     self.isJumping = ({world:check(self, self.x, self.y + 1)})[2] == self.y + 1
@@ -89,12 +89,12 @@ function Player:move(dt, world, filter)
     end
 
     if love.keyboard.isDown("left", "a") then
-        self.xVelocity = - self.maxSpeed * dt
+        self.xVelocity = - self.maxSpeed
 
         self.flip = false
         self.isRuninig = true
     elseif love.keyboard.isDown("right", "d") then
-        self.xVelocity = self.maxSpeed * dt
+        self.xVelocity = self.maxSpeed
 
         self.flip = true
         self.isRuninig = true
@@ -103,13 +103,13 @@ function Player:move(dt, world, filter)
         self.isRuninig = false
     end
 
-    if love.keyboard.isDown("up", "w", "space")   then
+    if love.keyboard.isDown("up", "w", "space") and not self.isJumping   then
         -- if math.abs(self.yVelocity) > self.jumpMaxSpeed then
         --     self.hasReachedMax = true
         -- end
 
         -- if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-            self.yVelocity = - self.jumpMaxSpeed * (self.status["Froggy"] and 3 or 1)
+            self.yVelocity = - self.jumpMaxSpeed * (self.status["Froggy"] and 1.5 or 1)
             self.isJumping = true
         -- end
     end

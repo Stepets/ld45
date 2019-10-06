@@ -3,7 +3,7 @@ function Enemy:new()
     local newObj = {
         x = 120,
         y = 50,
-        health = 10,
+        health = 1,
         scale = 0.4,
         type = 'boy',
         script = 'run',
@@ -45,29 +45,34 @@ function Enemy:init()
 
     if self.type == 'boy' then
         self.img = love.graphics.newImage('assets/boy.png')
-
-        self.animation.spriteSheet = self.img;
-        self.animation.stay = {};
-        self.animation.run = {};
-        self.animation.jump = {};
-        self.animation.attacked = {};
-
-        table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
-
-        table.insert(self.animation.run,
-            love.graphics.newQuad(5, 125, self.baseWidth + 20, self.baseHeight, self.img:getDimensions()))
-        table.insert(self.animation.run,
-            love.graphics.newQuad(90, 125, self.baseWidth + 5, self.baseHeight, self.img:getDimensions()))
-
-        table.insert(self.animation.jump,
-            love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
-
-        table.insert(self.animation.attacked,
-            love.graphics.newQuad(155, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
-
-        self.animation.duration = 0.5
-        self.animation.currentTime = 0
     end
+    if self.type == 'hobo' then
+        self.img = love.graphics.newImage('assets/hobo.png')
+
+
+    end
+
+    self.animation.spriteSheet = self.img;
+    self.animation.stay = {};
+    self.animation.run = {};
+    self.animation.jump = {};
+    self.animation.attacked = {};
+
+    table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
+
+    table.insert(self.animation.run,
+        love.graphics.newQuad(5, 125, self.baseWidth + 20, self.baseHeight, self.img:getDimensions()))
+    table.insert(self.animation.run,
+        love.graphics.newQuad(90, 125, self.baseWidth + 5, self.baseHeight, self.img:getDimensions()))
+
+    table.insert(self.animation.jump,
+        love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+
+    table.insert(self.animation.attacked,
+        love.graphics.newQuad(155, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+
+    self.animation.duration = 0.5
+    self.animation.currentTime = 0
 
 end
 
@@ -141,6 +146,10 @@ function Enemy:draw()
             0,
             -self.scale, self.scale, self.baseWidth, 0)
     end
+end
+
+function Enemy:drop()
+
 end
 
 

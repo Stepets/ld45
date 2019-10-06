@@ -34,9 +34,9 @@ function love.load()
     load_map('e1m1')
 
     mTileset = MapTileset:new()
-    mTileset:loadTileSet()
 
     background = love.graphics.newImage("assets/background.png")
+
 end
 
 function love.update(dt)
@@ -96,6 +96,19 @@ function love.draw()
                     enemy:init()
                     enemy.x = x * 32
                     enemy.y = y * 32
+                    world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
+                    table.insert(enemies, enemy)
+                    map[y][x] = nil
+                elseif c.name == 'enemy2' then
+                    local enemy = Enemy:new()
+                    enemy.x = x * 32
+                    enemy.y = y * 32
+                    enemy.health = 2
+                    enemy.scale = 0.5
+                    enemy.type = 'hobo'
+                    enemy.script = 'stay'
+                    enemy.inventory.coins = 1
+                    enemy:init()
                     world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
                     table.insert(enemies, enemy)
                     map[y][x] = nil
