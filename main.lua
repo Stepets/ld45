@@ -2,20 +2,19 @@ local Bump, Player, MapTileset, Enemy, camera
 
 local assets, map, status, world, hero, items, mTileset, ui
 
-local statuses
-local enemies = {}
+local enemies
+local map_to_load
 
-function love.load()
-    Bump = require 'bump.bump'
-    Player = require "player"
-    MapTileset = require "mapTileset"
-    Enemy = require "enemy"
-    camera = (require 'hump.camera').new()
-    assets = require "assets"
-    map, world = unpack(require "map")
-    status = require "status"
-    items = require "items"
-    ui = require "ui"
+function load_map(map_name)
+    map_to_load = map_name
+end
+
+function deffered_load_map()
+    local loader = require "map"
+    package.loaded["levels"] = nil
+    local levels = require "levels"
+    map, world = loader(levels[map_to_load])
+    map_to_load = nil
 
     hero = Player:new()
     hero:init()
@@ -25,38 +24,48 @@ function love.load()
     world:add(hero, hero.x, hero.y, hero.baseWidth * hero.scale, hero.baseHeight * hero.scale)
 
 
+    enemies = {}
     local enemy = Enemy:new()
     enemy:init()
     enemy.x = 10 * 32
     enemy.y = 32
     world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
     table.insert(enemies, enemy)
+end
+
+function love.load()
+    Bump = require 'bump.bump'
+    Player = require "player"
+    MapTileset = require "mapTileset"
+    Enemy = require "enemy"
+    camera = (require 'hump.camera').new()
+    assets = require "assets"
+    status = require "status"
+    items = require "items"
+    ui = require "ui"
+
+    load_map('e1m1')
 
     mTileset = MapTileset:new()
     mTileset:loadTileSet()
 end
 
 function love.update(dt)
+    if map_to_load then
+        deffered_load_map()
+    end
+
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
-        if item:can_pass(other.asset) then
+        if not other.asset or item:can_pass(other.asset.name) then
             return false
-        elseif other.name == 'coin' then
+        elseif other.asset.type == 'item' then
             if item == hero and not to_delete[other] then
                 to_delete[other] = function()
-                    hero.inventory.coins = hero.inventory.coins + 1
                     world:remove(other)
                     map[other.y][other.x] = nil
-                end
-            end
-            return "cross"
-        elseif other.name == 'bottle' then
-            if item == hero and not to_delete[other] then
-                to_delete[other] = function()
-                    hero.inventory.bottles = hero.inventory.bottles + 1
-                    world:remove(other)
-                    map[other.y][other.x] = nil
+                    if other.asset.effect then other.asset.effect(hero) end
                 end
             end
             return "cross"
