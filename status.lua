@@ -17,4 +17,5 @@ end
 return {
     ["Fire proof"] = status.new { "fire" },
     ["Icarus"] = status.new {},
+    ["Froggy"] = status.new {},
 }

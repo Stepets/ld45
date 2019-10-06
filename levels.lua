@@ -1,19 +1,19 @@
 local assets = require 'assets'
-local items = require 'items'
+local recipes = require 'recipes'
 local ui = require 'ui'
 
 local w = {asset = assets.wall, name = 'wall', type = 'tile'}
 local f = {asset = assets.fire, name = 'fire', type = 'tile'}
+local c = {name = 'coin', type = 'item', effect = function(hero) hero.inventory.coins = (hero.inventory.coins or 0) + 1 ui:update_inventory() end}
+local b = {name = 'bottle', type = 'item', effect = function(hero) hero.inventory.bottle = (hero.inventory.bottle or 0) + 1 ui:update_inventory() end}
+local p = {name = "player" }
 local g = { name = 'grass', type = 'grass'}
-local c = {name = 'coin', type = 'item', effect = function(hero) hero.inventory.coins = (hero.inventory.coins or 0) + 1 end}
-local b = {name = 'bottle', type = 'item', effect = function(hero) hero.inventory.bottle = (hero.inventory.bottle or 0) + 1 end}
-local p = {name = "player"}
 local e = {name = "enemy"}
 local r1 = {name = 'coin', type = 'item', effect = function(hero)
-    items.list["Shroobrew"] = {
+    recipes.list["Shroobrew"] = {
         cost = {coins = 1, alco = 1, shroom = 2},
         use = function(self, player)
-          if not items.check_cost(self, player) then
+          if not recipes.check_cost(self, player) then
             return false
           end
 
@@ -47,11 +47,11 @@ return {
         {w,_,_,_,_,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,w,_,_,_,_,_,_,_,w,w,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,r1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,w,w,_,_,_,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
-        {w,_,_,r1,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
+        {w,_,_,r1,_,_,_,_,_,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,w,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,w,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
-        {w,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,e,_,w,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,e,_,_,_,e1m2,_,_,w},
+        {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,e,_,w,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,e,_,_,_,e1m2,_,_,w},
         {w,w,g,g,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w},
     },
     e1m2 = {

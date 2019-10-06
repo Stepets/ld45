@@ -1,36 +1,19 @@
-local function check_cost(item, player)
-  for it, val in pairs(item.cost) do
-    if not player.inventory[it] or player.inventory[it] < val then
-      return false
-    end
-  end
-
-  for it, val in pairs(item.cost) do
-    player.inventory[it] = player.inventory[it] - val
-  end
-  return true
-end
-
-local list = {
-  alco = {
-    cost = {coins = 3},
-    use = function(self, player)
-      if not check_cost(self, player) then
-        return false
-      end
-
-      table.insert(player.status, {name = 'Fire proof', duration = 10})
-    end
-  },
-  donations = {
-    cost = {},
-    use = function(self, player)
-      player.inventory.coins = (player.inventory.coins or 0) + 1
-    end
-  },
-}
-
 return {
-    check_cost = check_cost,
-    list = list,
+    coins = function(hero)
+        hero.status["Froggy"] = (hero.status["Froggy"] or 0) + 2
+    end,
+    alco = function(hero)
+        hero.status["Fire proof"] = (hero.status["Fire proof"] or 0) + 10
+    end,
+    bottles = function(hero)
+        hero.status["Icarus"] = (hero.status["Icarus"] or 0) + 5
+    end,
+    shroom = function(hero)
+        hero.status["Icarus"] = (hero.status["Icarus"] or 0) + 5
+    end,
+    Shroobrew = function(hero)
+        hero.status["Froggy"] = (hero.status["Froggy"] or 0) + 20
+        hero.status["Fire proof"] = (hero.status["Fire proof"] or 0) + 35
+        hero.status["Icarus"] = (hero.status["Icarus"] or 0) + 3
+    end,
 }

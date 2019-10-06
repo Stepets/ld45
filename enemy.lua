@@ -94,15 +94,15 @@ function Enemy:move(dt, world, filter)
 
     self.x, self.y, collisions, collisionsLength = world:move(self, goalX, goalY, filter)
 
-    for i = 1, collisionsLength do
-        if collisions[i].other.health then
-            collisions[i].other.health = collisions[i].other.health - 1
-            collisions[i].other.isAttacked = true
-            if collisions[i].other.health < 1 then
-                world:remove(collisions[i].other)
-            end
-        end
-    end
+--    for i = 1, collisionsLength do
+--        if collisions[i].other.health then
+--            collisions[i].other.health = collisions[i].other.health - 1
+--            collisions[i].other.isAttacked = true
+--            if collisions[i].other.health < 1 then
+--                world:remove(collisions[i].other)
+--            end
+--        end
+--    end
 
     self.animation.currentTime = self.animation.currentTime + dt
     if self.animation.currentTime >= self.animation.duration then

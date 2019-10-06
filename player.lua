@@ -83,7 +83,7 @@ function Player:move(dt, world, filter)
 
     -- Apply gravity
     if self.isJumping then
-        self.yVelocity = self.yVelocity + self.gravity * dt
+        self.yVelocity = self.yVelocity + self.gravity * dt * (self.status["Icarus"] and -1 or 1)
     else
         self.yVelocity = 0
     end
@@ -103,13 +103,13 @@ function Player:move(dt, world, filter)
         self.isRuninig = false
     end
 
-    if love.keyboard.isDown("up", "w", "space") and not self.isJumping then
+    if love.keyboard.isDown("up", "w", "space")   then
         -- if math.abs(self.yVelocity) > self.jumpMaxSpeed then
         --     self.hasReachedMax = true
         -- end
 
         -- if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-            self.yVelocity = - self.jumpMaxSpeed
+            self.yVelocity = - self.jumpMaxSpeed * (self.status["Froggy"] and 3 or 1)
             self.isJumping = true
         -- end
     end
@@ -212,20 +212,19 @@ function Player:draw()
 end
 
 function Player:update_status(dt)
-    for i = #self.status, 1, -1 do
-        local s = self.status[i]
-        if s.duration then
-            s.duration = s.duration - dt
-            if s.duration <= 0 then
-                table.remove(self.status, i)
-            end
+    for name, duration in pairs(self.status) do
+        duration = duration - dt
+        if duration <= 0 then
+            self.status[name] = nil
+        else
+            self.status[name] = duration
         end
     end
 end
 
 function Player:can_pass(tile_code)
-    for _, s in ipairs(self.status) do
-        if statuses[s.name]:walkable(tile_code) then
+    for name, duration in pairs(self.status) do
+        if statuses[name]:walkable(tile_code) then
             return true
         end
     end

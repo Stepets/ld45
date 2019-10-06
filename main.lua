@@ -1,6 +1,6 @@
-local Bump, Player, MapTileset, Enemy, camera
+local Bump, Player, MapTileset, Enemy, camera, background
 
-local assets, map, status, world, hero, items, mTileset, ui
+local assets, map, status, world, hero, mTileset, ui
 
 local enemies
 local map_to_load
@@ -16,16 +16,9 @@ function deffered_load_map()
     map, world = loader(levels[map_to_load])
     map_to_load = nil
 
-    hero = Player:new()
-    hero:init()
-
-    ui:init(hero)
-
-    world:add(hero, hero.x, hero.y, hero.baseWidth * hero.scale, hero.baseHeight * hero.scale)
 
 
     enemies = {}
-
 end
 
 function love.load()
@@ -36,13 +29,14 @@ function love.load()
     camera = (require 'hump.camera').new()
     assets = require "assets"
     status = require "status"
-    items = require "items"
     ui = require "ui"
 
     load_map('e1m1')
 
     mTileset = MapTileset:new()
     mTileset:loadTileSet()
+
+    background = love.graphics.newImage("assets/background.png")
 end
 
 function love.update(dt)
@@ -52,28 +46,30 @@ function love.update(dt)
 
     local to_delete = {}
 
-    hero:move(dt, world, function(item, other)
-        if not other.asset or item:can_pass(other.asset.name) then
-            return false
-        elseif other.asset.type == 'item' then
-            if item == hero and not to_delete[other] then
-                to_delete[other] = function()
-                    world:remove(other)
-                    map[other.y][other.x] = nil
-                    if other.asset.effect then other.asset.effect(hero) end
+    if hero then
+        hero:move(dt, world, function(item, other)
+            if not other.asset or item:can_pass(other.asset.name) then
+                return false
+            elseif other.asset.type == 'item' then
+                if item == hero and not to_delete[other] then
+                    to_delete[other] = function()
+                        world:remove(other)
+                        map[other.y][other.x] = nil
+                        if other.asset.effect then other.asset.effect(hero) end
+                    end
                 end
+                return "cross"
+            else
+                return "slide"
             end
-            return "cross"
-        else
-            return "slide"
-        end
-    end)
+        end)
+        camera:lookAt(hero.x, hero.y)
+    end
 
     for item, effect in pairs(to_delete) do
         effect()
     end
     ui.update(dt)
-    camera:lookAt(hero.x, hero.y)
 
     for _, enemy in ipairs(enemies) do
         enemy:move(dt, world)
@@ -83,6 +79,12 @@ end
 function love.draw()
     camera:attach()
     love.graphics.setBackgroundColor(0, 0.4, 0.4)
+
+    for i = 0, love.graphics.getWidth() / background:getWidth() do
+        for j = 0, love.graphics.getHeight() / background:getHeight() do
+            love.graphics.draw(background, i * background:getWidth(), j * background:getHeight())
+        end
+    end
 
     local height = #map
     for y, row in ipairs(map) do
@@ -97,6 +99,14 @@ function love.draw()
                     world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
                     table.insert(enemies, enemy)
                     map[y][x] = nil
+                elseif c.name == 'player' then
+                    hero = Player:new()
+                    hero.x = x * 32
+                    hero.y = y * 32
+                    hero:init()
+                    world:add(hero, hero.x, hero.y, hero.baseWidth * hero.scale, hero.baseHeight * hero.scale)
+                    ui:init(hero)
+                    map[y][x] = nil
                 else
                     mTileset:drawTile(c.type, c.name, x, y)
                 end
@@ -107,7 +117,10 @@ function love.draw()
         enemy:draw()
     end
 
-    hero:draw()
+    if hero then
+        hero:draw()
+    end
+
     camera:detach()
     ui.draw()
 end
