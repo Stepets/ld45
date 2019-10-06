@@ -7,7 +7,7 @@ local function load(structure)
     for y, row in ipairs(structure) do
         for x = 1, structure.w do
             local c = row[x]
-            if c then
+            if c and c.name ~= 'enemy' then
                 world:add({asset = c, x = x, y = y}, x * assets.w, y * assets.h, assets.w, assets.h)
             end
         end

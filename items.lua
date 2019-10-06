@@ -5,7 +5,7 @@ return {
     alco = function(hero)
         hero.status["Fire proof"] = (hero.status["Fire proof"] or 0) + 10
     end,
-    bottle = function(hero)
+    bottles = function(hero)
         hero.status["Icarus"] = (hero.status["Icarus"] or 0) + 5
     end,
     shroom = function(hero)

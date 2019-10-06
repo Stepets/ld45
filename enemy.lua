@@ -4,22 +4,26 @@ function Enemy:new()
         x = 120,
         y = 50,
         health = 10,
+        scale = 0.4,
+        type = 'boy',
+        script = 'run',
 
         -- The first set of values are for our rudimentary physics system
         xVelocity = 0, -- current velocity on x, y axes
         yVelocity = 0,
-        acc = 100, -- the acceleration of our player
-        maxSpeed = 300, -- the top speed
-        friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
-        gravity = 100, -- we will accelerate towards the bottom
 
-        -- These are values applying specifically to jumping
-        isJumping = false, -- are we in the process of jumping?
-        isRuninig = false, -- are we in the process of jumping?
-        isAttacked = false, -- are we in the process of jumping?
+        maxSpeed = 50, -- the top speed
+        gravity = 30, -- we will accelerate towards the bottom
+
+
+        isAttack = false,
+        isJumping = false,
+        isRuninig = false,
+        isBottle = false,
         hasReachedMax = false,
-        jumpAcc = 25, -- how fast do we accelerate towards the top
-        jumpMaxSpeed = 10, -- our speed limit while jumping
+
+        jumpMaxSpeed = 7, -- our speed limit while jumping
+
         -- Here are some incidental storage areas
         img = nil,
         animation = {},
@@ -38,29 +42,33 @@ function Enemy:new()
 end
 
 function Enemy:init()
-    self.img = love.graphics.newImage('assets/boy.png')
 
-    self.animation.spriteSheet = self.img;
-    self.animation.stay = {};
-    self.animation.run = {};
-    self.animation.jump = {};
-    self.animation.attacked = {};
+    if self.type == 'boy' then
+        self.img = love.graphics.newImage('assets/boy.png')
 
-    table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
+        self.animation.spriteSheet = self.img;
+        self.animation.stay = {};
+        self.animation.run = {};
+        self.animation.jump = {};
+        self.animation.attacked = {};
 
-    table.insert(self.animation.run,
-        love.graphics.newQuad(5, 125, self.baseWidth + 20, self.baseHeight, self.img:getDimensions()))
-    table.insert(self.animation.run,
-        love.graphics.newQuad(90, 125, self.baseWidth + 5, self.baseHeight, self.img:getDimensions()))
+        table.insert(self.animation.stay, love.graphics.newQuad(10, 16, self.baseWidth, self.baseHeight, self.img:getDimensions()))
 
-    table.insert(self.animation.jump,
-        love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+        table.insert(self.animation.run,
+            love.graphics.newQuad(5, 125, self.baseWidth + 20, self.baseHeight, self.img:getDimensions()))
+        table.insert(self.animation.run,
+            love.graphics.newQuad(90, 125, self.baseWidth + 5, self.baseHeight, self.img:getDimensions()))
 
-    table.insert(self.animation.attacked,
-        love.graphics.newQuad(155, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+        table.insert(self.animation.jump,
+            love.graphics.newQuad(83, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
 
-    self.animation.duration = 0.5
-    self.animation.currentTime = 0
+        table.insert(self.animation.attacked,
+            love.graphics.newQuad(155, 12, self.baseWidth + 10, self.baseHeight, self.img:getDimensions()))
+
+        self.animation.duration = 0.5
+        self.animation.currentTime = 0
+    end
+
 end
 
 function Enemy:move(dt, world, filter)
@@ -72,14 +80,26 @@ function Enemy:move(dt, world, filter)
     local goalY = self.y + self.yVelocity
     local collisions
 
-    -- Apply Friction
-    self.xVelocity = self.xVelocity * (1 - math.min(dt * self.friction, 1))
-    self.yVelocity = self.yVelocity * (1 - math.min(dt * self.friction, 1))
 
     -- Apply gravity
     self.yVelocity = self.yVelocity + self.gravity * dt
 
+
+    if self.script == 'run' then
+        self.xVelocity = - self.maxSpeed * dt
+
+        self.flip = false
+        self.isRuninig = true
+    end
+
     self.x, self.y, collisions = world:move(self, goalX, goalY, filter)
+
+
+    self.animation.currentTime = self.animation.currentTime + dt
+    if self.animation.currentTime >= self.animation.duration then
+        self.animation.currentTime = self.animation.currentTime - self.animation.duration
+    end
+
 end
 
 function Enemy:draw()
@@ -105,12 +125,12 @@ function Enemy:draw()
         love.graphics.draw(self.animation.spriteSheet, activeFrame,
             self.x, self.y,
             0,
-            0.5, 0.5)
+            self.scale, self.scale)
     else
         love.graphics.draw(self.animation.spriteSheet, activeFrame,
             self.x, self.y,
             0,
-            -0.5, 0.5, self.baseWidth, 0)
+            -self.scale, self.scale, self.baseWidth, 0)
     end
 end
 
