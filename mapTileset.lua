@@ -9,6 +9,16 @@ function MapTileset:new()
             wall = 10,
             fire = 40,
         },
+
+        grassQuads = {},
+        grassSpriteSheet = nil,
+        grassWidth = 70,
+        grassHeight = 70,
+        grass = {
+            grass = 26,
+        },
+
+
         itemsQuads = {},
         itemsSpriteSheet = nil,
         items = {
@@ -39,6 +49,17 @@ function MapTileset:loadTileSet()
 
     table.insert(self.itemsQuads, love.graphics.newQuad(685, 700, 55, 145, image:getDimensions()))
     table.insert(self.itemsQuads, love.graphics.newQuad(290, 650, 70, 70, image:getDimensions()))
+
+    image = love.graphics.newImage('assets/map/grass.png')
+
+    self.grassSpriteSheet = image
+
+    for y = 0, image:getHeight() - self.grassHeight, self.grassHeight do
+        for x = 0, image:getWidth() - self.grassWidth, self.grassWidth do
+            table.insert(self.grassQuads, love.graphics.newQuad(x, y, self.grassWidth, self.grassHeight, image:getDimensions()))
+        end
+    end
+
 end
 
 function MapTileset:drawTile(type, name, x, y)
@@ -53,6 +74,11 @@ function MapTileset:drawTile(type, name, x, y)
         love.graphics.draw(self.itemsSpriteSheet, self.itemsQuads[tileNumber],
             x * 32, y * 32, 0,
             0.3, 0.3)
+    elseif type == 'grass' then
+        tileNumber = self.grass[name]
+        love.graphics.draw(self.grassSpriteSheet, self.grassQuads[tileNumber],
+            x * 32, y * 32, 0,
+            0.5, 0.5)
     end
 end
 

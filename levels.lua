@@ -4,6 +4,7 @@ local ui = require 'ui'
 
 local w = {asset = assets.wall, name = 'wall', type = 'tile'}
 local f = {asset = assets.fire, name = 'fire', type = 'tile'}
+local g = { name = 'grass', type = 'grass'}
 local c = {name = 'coin', type = 'item', effect = function(hero) hero.inventory.coins = (hero.inventory.coins or 0) + 1 end}
 local b = {name = 'bottle', type = 'item', effect = function(hero) hero.inventory.bottle = (hero.inventory.bottle or 0) + 1 end}
 local p = {name = "player"}
@@ -51,7 +52,7 @@ return {
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,_,_,w,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w},
         {w,p,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,_,w,w,_,w,e,_,w,_,_,_,_,_,_,_,e,_,_,_,_,_,_,_,_,_,e,_,_,_,e1m2,_,_,w},
-        {w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w},
+        {w,w,g,g,g,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w,w},
     },
     e1m2 = {
         w = 77,
