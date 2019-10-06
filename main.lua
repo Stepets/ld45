@@ -38,17 +38,16 @@ function love.load()
 
     ui:init(hero)
 
-    load_map('e1m1')
+    load_map('e1m2')
 
     mTileset = MapTileset:new()
-    mTileset:loadTileSet()
 end
 
 function love.update(dt)
     if map_to_load then
         deffered_load_map()
     end
-    
+
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
