@@ -31,7 +31,7 @@ function love.load()
     status = require "status"
     ui = require "ui"
 
-    load_map('e1m1')
+    load_map('e1m2')
 
     mTileset = MapTileset:new()
 
