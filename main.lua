@@ -25,12 +25,7 @@ function deffered_load_map()
 
 
     enemies = {}
-    local enemy = Enemy:new()
-    enemy:init()
-    enemy.x = 10 * 32
-    enemy.y = 32
-    world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
-    table.insert(enemies, enemy)
+
 end
 
 function love.load()
