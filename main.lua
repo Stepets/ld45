@@ -40,21 +40,12 @@ function love.update(dt)
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
-        if item:can_pass(other.asset) then
+        if not other.asset or item:can_pass(other.asset.name) then
             return false
-        elseif other.name == 'coin' then
+        elseif other.asset.type == 'item' then
             if item == hero and not to_delete[other] then
                 to_delete[other] = function()
-                    hero.inventory.coins = hero.inventory.coins + 1
-                    world:remove(other)
-                    map[other.y][other.x] = nil
-                end
-            end
-            return "cross"
-        elseif other.name == 'bottle' then
-            if item == hero and not to_delete[other] then
-                to_delete[other] = function()
-                    hero.inventory.bottles = hero.inventory.bottles + 1
+                    if other.asset.effect then other.asset.effect(hero) end
                     world:remove(other)
                     map[other.y][other.x] = nil
                 end

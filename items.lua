@@ -1,6 +1,6 @@
 local function check_cost(item, player)
   for it, val in pairs(item.cost) do
-    if not player.inventory or player.inventory[it] < val then
+    if not player.inventory[it] or player.inventory[it] < val then
       return false
     end
   end
@@ -11,7 +11,7 @@ local function check_cost(item, player)
   return true
 end
 
-local items = {
+local list = {
   alco = {
     cost = {coins = 3},
     use = function(self, player)
@@ -30,4 +30,7 @@ local items = {
   },
 }
 
-return items
+return {
+    check_cost = check_cost,
+    list = list,
+}

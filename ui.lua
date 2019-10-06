@@ -22,32 +22,14 @@ function ui:init(hero)
   self.craft_frame = loveframes.Create("frame")
   self.craft_frame:SetName("Recipes")
   self.craft_frame:SetVisible(false)
-  self.craft_frame:SetSize(185, 210)
+  self.craft_frame:SetSize(285, 210)
   self.craft_frame:SetPos(500, 500, true)
   self.craft_frame.OnClose = function(obj)
     obj:SetVisible(not obj:GetVisible())
     return false
   end
 
-  local offset_y = 30
-  for item, info in pairs(items) do
-    local button = loveframes.Create("button", self.craft_frame)
-  	button:SetSize(175, 30)
-
-    local recipe = ''
-    for it, val in pairs(info.cost) do
-      recipe = recipe .. ' ' .. it .. ' x' .. tostring(val)
-    end
-    recipe = recipe .. ' => ' .. item
-  	button:SetText(recipe)
-
-    button.OnClick = function(object, x, y)
-  		info:use(self.hero)
-  	end
-
-    button:SetPos(5, offset_y)
-    offset_y = offset_y + 30
-  end
+  self:update_recipes()
 
   local panel = loveframes.Create("panel")
   panel:SetSize(125, 125)
@@ -61,6 +43,28 @@ function ui:init(hero)
     obj:SetText(text)
   end
 
+end
+
+function ui:update_recipes()
+    local offset_y = 30
+    for item, info in pairs(items.list) do
+        local button = loveframes.Create("button", self.craft_frame)
+        button:SetSize(self.craft_frame:GetWidth()-10, 30)
+
+        local recipe = ''
+        for it, val in pairs(info.cost) do
+        recipe = recipe .. ' ' .. it .. ' x' .. tostring(val)
+        end
+        recipe = recipe .. ' => ' .. item
+        button:SetText(recipe)
+
+        button.OnClick = function(object, x, y)
+        	info:use(self.hero)
+        end
+
+        button:SetPos(5, offset_y)
+        offset_y = offset_y + 32
+    end
 end
 
 function ui.update(dt)

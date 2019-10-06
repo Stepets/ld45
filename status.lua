@@ -15,6 +15,6 @@ function status:walkable(tile_code)
 end
 
 return {
-    ["Fire proof"] = status.new { assets.fire },
+    ["Fire proof"] = status.new { "fire" },
     ["Icarus"] = status.new {},
 }
