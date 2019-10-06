@@ -11,10 +11,10 @@ function Player:new()
         -- The first set of values are for our rudimentary physics system
         xVelocity = 0, -- current velocity on x, y axes
         yVelocity = 0,
-        acc = 100, -- the acceleration of our player
-        maxSpeed = 300, -- the top speed
-        friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
-        gravity = 100, -- we will accelerate towards the bottom
+        -- acc = 100, -- the acceleration of our player
+        maxSpeed = 500, -- the top speed
+        -- friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
+        gravity = 30, -- we will accelerate towards the bottom
 
         -- These are values applying specifically to jumping
         isAttack = false, -- are we in the process of jumping?
@@ -22,8 +22,8 @@ function Player:new()
         isRuninig = false, -- are we in the process of jumping?
         isBottle = false, -- are we in the process of jumping?
         hasReachedMax = false,
-        jumpAcc = 25, -- how fast do we accelerate towards the top
-        jumpMaxSpeed = 10, -- our speed limit while jumping
+        -- jumpAcc = 25, -- how fast do we accelerate towards the top
+        jumpMaxSpeed = 7, -- our speed limit while jumping
         -- Here are some incidental storage areas
         img = nil,
         animation = {},
@@ -78,38 +78,39 @@ function Player:move(dt, world, filter)
     local goalY = self.y + self.yVelocity
     local collisions, collisionsLength
 
-    -- Apply Friction
-    self.xVelocity = self.xVelocity * (1 - math.min(dt * self.friction, 1))
-    self.yVelocity = self.yVelocity * (1 - math.min(dt * self.friction, 1))
+    self.isJumping = ({world:check(self, self.x, self.y + 1)})[2] == self.y + 1
 
     -- Apply gravity
-    self.yVelocity = self.yVelocity + self.gravity * dt
+    if self.isJumping then
+        self.yVelocity = self.yVelocity + self.gravity * dt
+    else
+        self.yVelocity = 0
+    end
 
-    if love.keyboard.isDown("left", "a") and self.xVelocity > -self.maxSpeed then
-        self.xVelocity = self.xVelocity - self.acc * dt
+    if love.keyboard.isDown("left", "a") then
+        self.xVelocity = - self.maxSpeed * dt
 
         self.flip = false
         self.isRuninig = true
-    elseif love.keyboard.isDown("right", "d") and self.xVelocity < self.maxSpeed then
-        self.xVelocity = self.xVelocity + self.acc * dt
+    elseif love.keyboard.isDown("right", "d") then
+        self.xVelocity = self.maxSpeed * dt
 
         self.flip = true
         self.isRuninig = true
     else
+        self.xVelocity = 0
         self.isRuninig = false
     end
 
-    if love.keyboard.isDown("up", "w", "space") then
-        if math.abs(self.yVelocity) > self.jumpMaxSpeed then
-            self.hasReachedMax = true
-        end
+    if love.keyboard.isDown("up", "w", "space") and not self.isJumping then
+        -- if math.abs(self.yVelocity) > self.jumpMaxSpeed then
+        --     self.hasReachedMax = true
+        -- end
 
-        if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-            self.yVelocity = self.yVelocity - 250 * dt
+        -- if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
+            self.yVelocity = - self.jumpMaxSpeed
             self.isJumping = true
-        end
-    else
-        self.isJumping = false
+        -- end
     end
 
 
