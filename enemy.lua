@@ -4,6 +4,7 @@ function Enemy:new()
         x = 120,
         y = 50,
         health = 10,
+        scale = 0.4,
 
         -- The first set of values are for our rudimentary physics system
         xVelocity = 0, -- current velocity on x, y axes
@@ -105,12 +106,12 @@ function Enemy:draw()
         love.graphics.draw(self.animation.spriteSheet, activeFrame,
             self.x, self.y,
             0,
-            0.5, 0.5)
+            self.scale, self.scale)
     else
         love.graphics.draw(self.animation.spriteSheet, activeFrame,
             self.x, self.y,
             0,
-            -0.5, 0.5, self.baseWidth, 0)
+            -self.scale, self.scale, self.baseWidth, 0)
     end
 end
 

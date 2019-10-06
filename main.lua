@@ -22,14 +22,14 @@ function love.load()
 
     ui:init(hero)
 
-    world:add(hero, hero.x, hero.y, 20, hero.baseHeight * 0.5)
+    world:add(hero, hero.x, hero.y, hero.baseWidth * hero.scale, hero.baseHeight * hero.scale)
 
 
     local enemy = Enemy:new()
     enemy:init()
     enemy.x = 10 * 32
     enemy.y = 32
-    world:add(enemy, enemy.x, enemy.y, 20, enemy.baseHeight * 0.5)
+    world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
     table.insert(enemies, enemy)
 
     mTileset = MapTileset:new()
@@ -90,7 +90,7 @@ function love.draw()
                     enemy:init()
                     enemy.x = x * 32
                     enemy.y = y * 32
-                    world:add(enemy, enemy.x, enemy.y, 20, enemy.baseHeight * 0.5)
+                    world:add(enemy, enemy.x, enemy.y, enemy.baseWidth * enemy.scale, enemy.baseHeight * enemy.scale)
                     table.insert(enemies, enemy)
                     map[y][x] = nil
                 else
