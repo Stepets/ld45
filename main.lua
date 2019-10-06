@@ -1,6 +1,6 @@
 local Bump, Player, MapTileset, Enemy, camera
 
-local assets, map, status, world, hero, items, mTileset, ui
+local assets, map, status, world, hero, mTileset, ui
 
 local enemies
 local map_to_load
@@ -15,11 +15,6 @@ function deffered_load_map()
     local levels = require "levels"
     map, world = loader(levels[map_to_load])
     map_to_load = nil
-
-    hero = Player:new()
-    hero:init()
-
-    ui:init(hero)
 
     world:add(hero, hero.x, hero.y, 20, hero.baseHeight * 0.5)
 
@@ -41,8 +36,12 @@ function love.load()
     camera = (require 'hump.camera').new()
     assets = require "assets"
     status = require "status"
-    items = require "items"
     ui = require "ui"
+
+    hero = Player:new()
+    hero:init()
+
+    ui:init(hero)
 
     load_map('e1m1')
 

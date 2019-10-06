@@ -1,18 +1,18 @@
 local assets = require 'assets'
-local items = require 'items'
+local recipes = require 'recipes'
 local ui = require 'ui'
 
 local w = {asset = assets.wall, name = 'wall', type = 'tile'}
 local f = {asset = assets.fire, name = 'fire', type = 'tile'}
-local c = {name = 'coin', type = 'item', effect = function(hero) hero.inventory.coins = (hero.inventory.coins or 0) + 1 end}
-local b = {name = 'bottle', type = 'item', effect = function(hero) hero.inventory.bottle = (hero.inventory.bottle or 0) + 1 end}
+local c = {name = 'coin', type = 'item', effect = function(hero) hero.inventory.coins = (hero.inventory.coins or 0) + 1 ui:update_inventory() end}
+local b = {name = 'bottle', type = 'item', effect = function(hero) hero.inventory.bottle = (hero.inventory.bottle or 0) + 1 ui:update_inventory() end}
 local p = {name = "player"}
 local e = {name = "enemy"}
 local r1 = {name = 'coin', type = 'item', effect = function(hero)
-    items.list["Shroobrew"] = {
+    recipes.list["Shroobrew"] = {
         cost = {coins = 1, alco = 1, shroom = 2},
         use = function(self, player)
-          if not items.check_cost(self, player) then
+          if not recipes.check_cost(self, player) then
             return false
           end
 
