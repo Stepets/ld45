@@ -48,7 +48,7 @@ function love.update(dt)
     if map_to_load then
         deffered_load_map()
     end
-
+    
     local to_delete = {}
 
     hero:move(dt, world, function(item, other)
